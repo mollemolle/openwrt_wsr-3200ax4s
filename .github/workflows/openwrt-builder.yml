@@ -1,7 +1,7 @@
 #
-# https://github.com/P3TERX/Actions-OpenWrt
+# https://github.com
 #
-# File: .github/workflows/openwrt-bulder.yml
+# File: .github/workflows/openwrt-builder.yml
 # Description: Build OpenWrt using GitHub Actions
 #
 # Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://openwrt.org
+  REPO_BRANCH: v25.12.5
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -26,7 +26,7 @@ env:
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
-  TZ: Asia/Shanghai
+  TZ: Asia/Tokyo
 
 jobs:
   build:
@@ -69,6 +69,38 @@ jobs:
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
+
+    - name: Custom Configurations and Modifications
+      run: |
+        cd openwrt
+        # あなた用のブランチを作成して切り替え
+        git switch -c my-v25.12.5
+
+        # ターゲットのベースconfigを取得
+        wget https://openwrt.org -O .config
+
+        # WSR-3200AX4S 用のターゲットプロファイル設定 (menuconfigの代わり)
+        sed -i 's/CONFIG_TARGET_MULTI_PROFILE=y/# CONFIG_TARGET_MULTI_PROFILE is not set/' .config
+        echo "CONFIG_TARGET_DEVICE_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .config
+
+        # DTSファイルの差し替え
+        wget https://pastebin.com -O ./target/linux/mediatek/dts/mt7622-buffalo-wsr-3200ax4s.dts
+
+        # カーネル設定の追加
+        for conf in ./target/linux/mediatek/mt7622/config-*; do
+          if [ -f "$conf" ]; then
+            echo "CONFIG_MTD_VIRT_CONCAT=y" >> "$conf"
+          fi
+        done
+
+        # vermagic の固定化処理
+        echo "5721f98a447ca737b75326f25e62c50c" > ./vermagic
+
+        # 【修正】include/kernel-defaults.mk の置換処理（行末まで完全にマッチさせて置換）
+        sed -i 's|^[[:space:]]*grep.*\.config\.set.*\.vermagic.*|cp $(TOPDIR)/vermagic $(LINUX_DIR)/.vermagic|' ./include/kernel-defaults.mk
+
+        # 【修正】package/kernel/linux/Makefile の置換処理（行末まで完全にマッチさせて置換）
+        sed -i 's|^[[:space:]]*STAMP_BUILT:=.*kconfig\.pl.*|STAMP_BUILT:=$(STAMP_BUILT)_$(shell cat $(LINUX_DIR)/.vermagic)|' ./package/kernel/linux/Makefile
 
     - name: Load custom configuration
       run: |
@@ -131,7 +163,6 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
