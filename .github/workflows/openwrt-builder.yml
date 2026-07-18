@@ -17,8 +17,6 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com
-  REPO_BRANCH: v25.12.5
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -54,7 +52,8 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        # 公式のGitHubミラーから v25.12.5 を直接狙い撃ちしてクローン
+        git clone https://github.com -b v25.12.5 openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
@@ -96,10 +95,10 @@ jobs:
         # vermagic の固定化処理
         echo "5721f98a447ca737b75326f25e62c50c" > ./vermagic
 
-        # 【修正】include/kernel-defaults.mk の置換処理（行末まで完全にマッチさせて置換）
+        # include/kernel-defaults.mk の置換処理
         sed -i 's|^[[:space:]]*grep.*\.config\.set.*\.vermagic.*|cp $(TOPDIR)/vermagic $(LINUX_DIR)/.vermagic|' ./include/kernel-defaults.mk
 
-        # 【修正】package/kernel/linux/Makefile の置換処理（行末まで完全にマッチさせて置換）
+        # package/kernel/linux/Makefile の置換処理
         sed -i 's|^[[:space:]]*STAMP_BUILT:=.*kconfig\.pl.*|STAMP_BUILT:=$(STAMP_BUILT)_$(shell cat $(LINUX_DIR)/.vermagic)|' ./package/kernel/linux/Makefile
 
     - name: Load custom configuration
