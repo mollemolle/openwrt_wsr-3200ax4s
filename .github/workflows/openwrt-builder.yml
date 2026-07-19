@@ -1,7 +1,7 @@
 name: OpenWrt GitHub Builder
 
 on:
-  workflow_dispatch:  # ボタンを押した時（手動）だけ実行
+  workflow_dispatch:  # 手動ボタン（Run workflow）だけ
 
 permissions:
   contents: write
@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-22.04
     container:
       image: ghcr.io/openwrt/buildbot/buildworker-v3.11.8:latest
-      # === 【超重要】一般ユーザー(buildbot)としてコンテナを実行させ、tarエラーを完全回避します ===
-      options: --user buildbot
 
     steps:
     - name: Checkout Your Repository
@@ -28,8 +26,12 @@ jobs:
 
     - name: Run Builder Script
       run: |
+        # ワークスペース全体の所有権を念のためbuildbot（一般ユーザー）に変更
+        chown -R buildbot:buildbot $GITHUB_WORKSPACE
         chmod +x build.sh
-        ./build.sh
+        
+        # 【解決策】このステップの実行だけ、一般ユーザー(buildbot)に「なりすまして」実行します！
+        sudo -u buildbot ./build.sh
 
     - name: Upload Firmware to GitHub Releases
       uses: softprops/action-gh-release@v2
