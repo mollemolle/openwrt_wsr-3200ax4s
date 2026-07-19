@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-22.04
     # OpenWrt公式のビルド用コンテナを使用（環境エラーを完全回避）
     container:
-      image: ghcr.io/openwrt/buildbot/buildworker-v25.12.5:latest
-
+      image: ghcr.io/openwrt/buildbot/buildworker-v3.11.8:latest
+      
     steps:
     - name: Checkout Your Repository
       uses: actions/checkout@v4
