@@ -22,7 +22,7 @@ jobs:
         path: ~/.ccache
         key: ${{ runs-on }}-openwrt-ccache-${{ github.sha }}
         restore-keys: |
-          ${{ runs-on }}-openwrt-ccache-      
+          ${{ runs-on }}-openwrt-ccache-
 
     - name: Run Builder Script
       env:
