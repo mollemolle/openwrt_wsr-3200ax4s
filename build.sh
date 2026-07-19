@@ -31,10 +31,10 @@ echo "CONFIG_MTD_VIRT_CONCAT=y" >> ./target/linux/mediatek/mt7622/config-6.12
 echo  5721f98a447ca737b75326f25e62c50c > ./vermagic
 
 # 6. ファイルの書き換え（viの手間を無くして全自動化）
+set +e
 sed -i 's|grep '\''=\[ym\]'\'' \$(LINUX_DIR)/\.config\.set \| LC_ALL=C sort \| \$(MKHASH) md5 > \$(LINUX_DIR)/\.vermagic|cp $(TOPDIR)/vermagic $(LINUX_DIR)/.vermagic|' ./include/kernel-defaults.mk
-
 sed -i 's|STAMP_BUILT:=\$(STAMP_BUILT)_\$(shell \$(SCRIPT_DIR)/kconfig\.pl \$(LINUX_DIR)/\.config \| \$(MKHASH) md5)|STAMP_BUILT:=$(STAMP_BUILT)_$(shell cat $(LINUX_DIR)/.vermagic)|' ./package/kernel/linux/Makefile
-
+set -e
 
 # 7. ビルドの実行
 make defconfig
