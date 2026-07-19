@@ -20,9 +20,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.ccache
-        key: ${{ runs-on }}-openwrt-ccache-${{ github.sha }}
+        key: ubuntu-22.04-openwrt-ccache-${{ github.sha }}
         restore-keys: |
-          ${{ runs-on }}-openwrt-ccache-
+          ubuntu-22.04-openwrt-ccache-
 
     - name: Run Builder Script
       env:
