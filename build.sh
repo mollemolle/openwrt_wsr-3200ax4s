@@ -19,6 +19,7 @@ echo "CONFIG_TARGET_DEVICE_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .co
 
 # 4.【追加】コンパイルキャッシュ（ccache）の有効化設定
 echo "CONFIG_CCACHE=y" >> .config
+echo "CONFIG_CCACHE_DIR=\"$GITHUB_WORKSPACE/.ccache\"" >> .config
 make defconfig
 
 # 5. カスタムファイルの取得と設定の追加
