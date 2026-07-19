@@ -14,8 +14,11 @@ git switch -c my-v25.12.5
 
 # 3. 設定ファイルの取得と反映
 wget https://downloads.openwrt.org/releases/25.12.5/targets/mediatek/mt7622/config.buildinfo -O .config
-echo "CONFIG_TARGET_MULTI_PROFILE=y" >> .config
-echo "CONFIG_TARGET_DEVICE_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .config
+#echo "CONFIG_TARGET_MULTI_PROFILE=y" >> .config
+#echo "CONFIG_TARGET_DEVICE_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .config
+echo "# CONFIG_TARGET_MULTI_PROFILE is not set" >> .config
+echo "CONFIG_TARGET_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .config
+
 
 # 4.【追加】コンパイルキャッシュ（ccache）の有効化設定
 echo "CONFIG_CCACHE=y" >> .config
