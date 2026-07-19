@@ -15,6 +15,15 @@ jobs:
     steps:
     - name: Checkout Your Repository
       uses: actions/checkout@v4
+      
+ # コンテナの一般ユーザーのフォルダ(ccache)を安全に記憶する設定
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: /home/buildbot/.ccache
+        key: ubuntu-22.04-openwrt-ccache-${{ github.sha }}
+        restore-keys: |
+          ubuntu-22.04-openwrt-ccache-
 
     - name: Run Builder Script
       run: |
