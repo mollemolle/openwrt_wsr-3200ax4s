@@ -1,8 +1,6 @@
 name: OpenWrt GitHub Builder
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
