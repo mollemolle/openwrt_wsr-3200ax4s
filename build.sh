@@ -2,26 +2,22 @@
 
 set -e  # 【追加】エラーが発生した時点で即座にスクリプトを停止する安全策
 
-# 1. パッケージのインストール
-sudo apt update
-sudo apt install -y bc binutils-gold bison build-essential ccache ecj fastjar file flex g++ gawk gcc-arm* gettext git help2man libbsd-dev libelf-dev liblzma-dev libncurses-dev libssl-dev mtd-utils meson mold mtd-utils ninja-build pbzip2 pigz pkg-config python3-dev python3-setuptools rsync subversion swig texinfo time u-boot-tools unzip wget xsltproc xxd zlib1g-dev zstd
-
-# 2. ソースコードの取得
+# 1. ソースコードの取得
 git clone https://git.openwrt.org/openwrt/openwrt.git
 cd openwrt/
 git checkout v25.12.5
 git switch -c my-v25.12.5
 
-# 3. フィードの更新
+# 2. フィードの更新
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
-# 4. 設定ファイルの取得と反映
+# 3. 設定ファイルの取得と反映
 wget https://downloads.openwrt.org/releases/25.12.5/targets/mediatek/mt7622/config.buildinfo -O .config
 echo "CONFIG_TARGET_MULTI_PROFILE=y" >> .config
 echo "CONFIG_TARGET_DEVICE_mediatek_mt7622_DEVICE_buffalo_wsr-3200ax4s=y" >> .config
 
-# 【追加】コンパイルキャッシュ（ccache）の有効化設定
+# 4.【追加】コンパイルキャッシュ（ccache）の有効化設定
 echo "CONFIG_CCACHE=y" >> .config
 make defconfig
 
