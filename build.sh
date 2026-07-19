@@ -13,10 +13,14 @@ git switch -c my-v25.12.5
 ./scripts/feeds install -a
 
 # 3. 【超重要：lzoエラーを完全回避する対策】
-# === 【超重要：lzoエラーの息の根を完全に止めるダミータスク化】 ===
 # liblzoのビルドが呼び出されても、何もせずに「成功」したと嘘をついてスルーさせます
+# 新しいコンパイラでエラーになる、WSR-3200AX4Sに一切不要な古いツールのビルドをスキップします
+# liblzoのダミー化
 mkdir -p ./tools/liblzo
-echo -e "all:\n\t@echo 'Dummy liblzo for WSR-3200AX4S'\ncompile:\n\t@echo 'Dummy compile'\ninstall:\n\t@echo 'Dummy install'\nclean:\n\t@echo 'Dummy clean'" > ./tools/liblzo/Makefile
+echo -e "all:\n\t@echo 'Dummy liblzo'\ncompile:\n\t@echo 'Dummy compile'\ninstall:\n\t@echo 'Dummy install'\nclean:\n\t@echo 'Dummy clean'" > ./tools/liblzo/Makefile
+# lzopのダミー化（ここを追加！）
+mkdir -p ./tools/lzop
+echo -e "all:\n\t@echo 'Dummy lzop'\ncompile:\n\t@echo 'Dummy compile'\ninstall:\n\t@echo 'Dummy install'\nclean:\n\t@echo 'Dummy clean'" > ./tools/lzop/Makefile
 
 
 # 4. 設定ファイルの取得と反映
