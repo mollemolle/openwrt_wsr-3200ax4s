@@ -34,4 +34,6 @@ sed -i 's|STAMP_BUILT:=\$(STAMP_BUILT)_\$(shell \$(SCRIPT_DIR)/kconfig\.pl \$(LI
 
 
 # 7. ビルドの実行
-make -j$(nproc) defconfig download clean world
+make defconfig
+make -j$(nproc) world
+
